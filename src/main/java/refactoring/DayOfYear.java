@@ -41,30 +41,64 @@ public class DayOfYear {
          * parameters, return type).
          */
 
-        if (month == 2) {
-            dayOfMonth += 31;
-        } else if (month == 3) {
-            dayOfMonth += 59;
-        } else if (month == 4) {
-            dayOfMonth += 90;
-        } else if (month == 5) {
-            dayOfMonth += 31 + 28 + 31 + 30;
-        } else if (month == 6) {
-            dayOfMonth += 31 + 28 + 31 + 30 + 31;
-        } else if (month == 7) {
-            dayOfMonth += 31 + 28 + 31 + 30 + 31 + 30;
-        } else if (month == 8) {
-            dayOfMonth += 31 + 28 + 31 + 30 + 31 + 30 + 31;
-        } else if (month == 9) {
-            dayOfMonth += 31 + 28 + 31 + 30 + 31 + 30 + 31 + 31;
-        } else if (month == 10) {
-            dayOfMonth += 31 + 28 + 31 + 30 + 31 + 30 + 31 + 31 + 30;
-        } else if (month == 11) {
-            dayOfMonth += 31 + 28 + 31 + 30 + 31 + 30 + 31 + 31 + 30 + 31;
-        } else if (month == 12) {
-            dayOfMonth += 31 + 28 + 31 + 30 + 31 + 30 + 31 + 31 + 30 + 31 + 31;
+        validateDate(month, dayOfMonth, year);
+
+        int totalDays = dayOfMonth;
+
+        for (int i = 1; i < month; i++) {
+            totalDays += daysInMonth(i, year);
         }
 
-        return dayOfMonth;
+        return totalDays;
+    }
+
+    public static int dayOfYearFixed(int month, int dayOfMonth, int year) {
+        return dayOfYear(month, dayOfMonth, year);
+    }
+
+    private static void validateDate(int month, int dayOfMonth, int year) {
+        if (month < 1 || month > 12) {
+            throw new IllegalArgumentException("Month must be between 1 and 12.");
+        }
+        nonLeapYearFebruary(month, dayOfMonth, year);
+
+        int maxDay = daysInMonth(month, year);
+        if (dayOfMonth < 1 || dayOfMonth > maxDay) {
+            throw new IllegalArgumentException("Invalid day for the given month and year.");
+        }
+    }
+    private static void nonLeapYearFebruary(int month, int day, int year) {
+        if (month == 2 && day == 29 && !isLeapYear(year)) {
+            throw new IllegalArgumentException("February 29 is invalid in a non-leap year.");
+        }
+    }
+
+    private static int daysInMonth(int month, int year) {
+        if (month == 2 && isLeapYear(year)) {
+            return 29;
+        }
+        switch (month) {
+        case 1:
+        case 3:
+        case 5:
+        case 7:
+        case 8:
+        case 10:
+        case 12:
+            return 31;
+        case 2:
+            return 28;
+        case 4:
+        case 6:
+        case 9:
+        case 11:
+            return 30;
+        default:
+            throw new IllegalArgumentException("Month must be between 1 and 12.");
+        }
+    }
+
+    private static boolean isLeapYear(int year) {
+        return (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0);
     }
 }
